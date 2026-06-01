@@ -1,0 +1,16 @@
+{
+  "userIgnoreFilters": [
+    "agents/",
+    "commands/",
+    "hooks/",
+    "skills/",
+    "scripts/",
+    "bin/",
+    "docs/",
+    "_templates/",
+    "README.md",
+    "CLAUDE.md",
+    "ATTRIBUTION.md",
+    "LICENSE"
+  ]
+}
