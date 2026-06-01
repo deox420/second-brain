@@ -1,0 +1,16 @@
+# Fuentes de noticias (RSS) para el cron del segundo cerebro   ← EDITAR
+#
+# Una fuente por línea:  nombre|url-del-feed
+# - 'nombre' es la etiqueta que aparecerá en la nota diaria (sin espacios raros).
+# - Prefiere RSS/Atom sobre scraping: es legal, estable y sin paywall.
+# - Las líneas que empiezan por '#' y las vacías se ignoran.
+#
+# Lo lee bin/cron-news-ingest.sh. Mantén esta lista alineada con CLAUDE.md §8.
+#
+# Ejemplos (descoméntalos y/o sustitúyelos por tus feeds reales):
+#
+# El País Portada|https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
+# Reuters World|https://feeds.reuters.com/Reuters/worldNews
+# Hacker News|https://hnrss.org/frontpage
+# Ars Technica|https://feeds.arstechnica.com/arstechnica/index
+# BBC Mundo|https://feeds.bbci.co.uk/mundo/rss.xml
