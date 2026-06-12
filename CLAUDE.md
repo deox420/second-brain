@@ -26,6 +26,7 @@ Este folder es a la vez un plugin de Claude Code y un vault de Obsidian. Las ski
 | `/canvas` | Capa visual: añade imágenes, PDFs y notas a un canvas de Obsidian |
 | **`/news` / "Procesa las noticias de hoy"** | **Ingesta diaria de noticias (capa propia) → `wiki-news` (ver §4)** |
 | **`/news-semana [YYYY-WW]`** | **Radar semanal (capa propia): sintetiza los radares diarios de la semana en `wiki/sources/news/semana-YYYY-WW.md`** |
+| **`/inbox`** | **Procesa la bandeja `.raw/inbox/` (capturas del móvil) con el protocolo de §5 y la limpia (capa propia, ver `docs/captura-movil.md`)** |
 | `/wiki-cli`, `/wiki-retrieve`, `/wiki-mode`, `/think`, `/wiki-fold` | Funciones avanzadas de la base (transporte CLI, retrieval híbrido, modos metodológicos, loop de pensamiento, folds). Opt-in. |
 
 **Transporte (base):** antes de mutar un archivo del vault, consulta `.vault-meta/transport.json`
@@ -132,6 +133,9 @@ para los temas de interés y agrupa el resto en una línea de "también hoy".
 ---
 
 ## 5. Ingesta de fuentes generales (no-noticia)
+
+La bandeja `.raw/inbox/` es el punto de entrada de capturas desde el móvil
+(ver `docs/captura-movil.md`); se procesa con `/inbox`.
 
 Cuando el usuario suelte un PDF/artículo/nota en `.raw/`:
 extrae entidades y conceptos, crea o actualiza sus páginas, cruza referencias y

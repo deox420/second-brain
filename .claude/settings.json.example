@@ -8,7 +8,8 @@
       "Write(.vault-meta/**)",
       "Bash(bash scripts/wiki-lock.sh:*)",
       "Bash(bash scripts/detect-transport.sh:*)",
-      "Bash(bash scripts/clean-raw-news.sh:*)"
+      "Bash(bash scripts/clean-raw-news.sh:*)",
+      "Bash(bash scripts/clean-inbox.sh:*)"
     ],
     "deny": [
       "Read(.env)",
