@@ -7,15 +7,13 @@
 # Requisito (una sola vez): Settings → Pages → Source: "GitHub Actions".
 # Privacidad: wiki/sessions/ y las notas con `publish: false` no se publican
 # (ver publish/quartz.config.ts y docs/publicacion.md).
-name: Publicar wiki (Quartz 4)
+name: Publicar wiki (Quartz 4 → GitHub Pages)
 
+# Método de publicación SECUNDARIO. El principal es Vercel (vercel.json +
+# scripts/build-site.sh), que despliega solo en cada push a main. Este workflow
+# de GitHub Pages queda como alternativa MANUAL: lánzalo desde la pestaña Actions
+# solo si quieres publicar también en Pages. Ver docs/publicacion.md.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "wiki/**"
-      - "publish/**"
-      - ".github/workflows/publish.yml"
   workflow_dispatch:
 
 permissions:

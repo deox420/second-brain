@@ -89,3 +89,7 @@ Untitled *.canvas
 .vault-meta/news-seen.txt.tmp
 .vault-meta/news-cron.log
 .vault-meta/lint-cron.log
+
+# Artefactos del build del sitio (Quartz/Vercel)
+/public/
+/.quartz-build/

@@ -3,28 +3,48 @@
 El vault se publica como sitio estático con [Quartz 4](https://quartz.jzhao.xyz/)
 (generador diseñado para vaults de Obsidian: wikilinks, backlinks, grafo, búsqueda).
 
-## Cómo funciona
+**Método principal: Vercel.** GitHub Pages queda como alternativa manual (más abajo).
 
-El repo **no** es un proyecto Quartz. El workflow `.github/workflows/publish.yml`, en cada
-push a `main` que toque `wiki/`:
+## Vercel (método activo)
 
-1. Clona `jackyzha0/quartz` (rama `v4`).
-2. Copia `wiki/` como `content/` del clon.
-3. Inyecta nuestra configuración: `publish/quartz.config.ts` (título "Segundo cerebro",
-   idioma `es-ES`, portada = `wiki/index.md`).
-4. Construye y despliega a GitHub Pages.
+El repo **no** es un proyecto Quartz: `scripts/build-site.sh` clona `jackyzha0/quartz`
+(rama `v4`), copia `wiki/` como `content/`, inyecta `publish/quartz.config.ts` y construye
+el sitio en `public/`. `vercel.json` le dice a Vercel que ejecute ese script y sirva
+`public/`. En cada push a `main`, Vercel reconstruye y despliega solo.
 
-Como el radar diario se auto-commitea (hook PostToolUse), **la nota de cada mañana se
-publica sola** tras el push.
+Como el radar diario se auto-commitea y se pushea, **la nota de cada mañana se publica
+sola** sin tocar nada.
 
-## Activación (una sola vez)
+### Activación (una sola vez)
 
-1. GitHub → repo → **Settings → Pages → Source: "GitHub Actions"**.
-2. Haz merge a `main` de la rama con el workflow (o lanza el workflow a mano con
-   *Run workflow*, tiene `workflow_dispatch`).
-3. En ~2 minutos el sitio queda en `https://deox420.github.io/second-brain/`.
+Opción A — desde el dashboard (recomendada, no necesita CLI):
+1. [vercel.com](https://vercel.com) → **Add New → Project → Import** el repo
+   `deox420/second-brain`.
+2. Vercel detecta `vercel.json`; no cambies nada (framework "Other", build y output ya
+   definidos). **Deploy**.
+3. Quedará en `https://<proyecto>.vercel.app`. Cada push a `main` redepliega.
 
-Si cambias de nombre de repo o de usuario, actualiza `baseUrl` en `publish/quartz.config.ts`.
+Opción B — desde la CLI (en tu terminal, dentro del repo):
+```bash
+npx vercel login        # una vez
+npx vercel --prod       # despliega; sigue las preguntas (link al repo)
+```
+
+`baseUrl` se ajusta solo en el build a partir de la variable `VERCEL_PROJECT_PRODUCTION_URL`
+que Vercel inyecta; no hay que tocar nada al cambiar de dominio.
+
+### Previsualizar en local
+```bash
+bash scripts/build-site.sh && npx serve public
+```
+
+## GitHub Pages (alternativa manual)
+
+El workflow `.github/workflows/publish.yml` quedó como `workflow_dispatch` (solo manual).
+Si algún día quieres publicar también en Pages: Settings → Pages → Source "GitHub Actions",
+y lánzalo desde la pestaña Actions → *Run workflow*. Quedaría en
+`https://deox420.github.io/second-brain/`. Actualiza `baseUrl` en
+`publish/quartz.config.ts` si lo usas.
 
 ## Privacidad (convención de CLAUDE.md §3)
 
