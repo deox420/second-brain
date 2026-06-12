@@ -58,14 +58,19 @@ for line in "${LINES[@]}"; do
   [ -z "$xml" ] && { echo "    (sin respuesta, se omite)"; continue; }
 
   # Parseo de RSS/Atom con python3 (stdlib). Emite un archivo por item reciente.
-  printf '%s' "$xml" | FEED_NAME="$name" RAW_DIR="$RAW_DIR" python3 - "$DATE" <<'PY'
+  # El XML viaja por archivo temporal: el heredoc ya ocupa stdin (es el programa),
+  # así que una tubería aquí nunca llegaría a Python.
+  xml_tmp="$(mktemp)"
+  printf '%s' "$xml" > "$xml_tmp"
+  FEED_NAME="$name" RAW_DIR="$RAW_DIR" XML_FILE="$xml_tmp" python3 - "$DATE" <<'PY'
 import os, sys, re, html, hashlib, datetime as dt
 import xml.etree.ElementTree as ET
 
 date_str = sys.argv[1]
 feed = os.environ.get("FEED_NAME", "fuente")
 raw_dir = os.environ["RAW_DIR"]
-data = sys.stdin.read()
+with open(os.environ["XML_FILE"], encoding="utf-8", errors="replace") as fh:
+    data = fh.read()
 
 def strip_ns(tag): return tag.split('}')[-1].lower()
 def text(el): return (el.text or "").strip() if el is not None else ""
@@ -131,6 +136,7 @@ for it in items:
 
 print(f"    {written} items")
 PY
+  rm -f "$xml_tmp"
   count=$((count + 1))
 done
 

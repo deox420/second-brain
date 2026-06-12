@@ -149,16 +149,21 @@ recurrir a búsqueda web. (Detalle: `skills/wiki-query/SKILL.md`.)
 
 ```yaml
 temas:
-  - economia        # ej: política monetaria, mercados
-  - tecnologia      # ej: IA, software
-  - geopolitica
+  - tecnologia      # software, hardware, internet
+  - ia              # modelos, herramientas, industria
+  - ciberseguridad  # vulnerabilidades, pentesting, wifi/redes
+  - linux           # Arch, Hyprland, ecosistema open source
   - ciencia
+  - actualidad-es   # España: solo lo relevante, sin ruido político diario
   # añade o quita libremente
 prioridad_alta:     # estos nunca se descartan
   - ia
+  - ciberseguridad
+  - arch-linux      # avisos oficiales de Arch (actualizaciones que requieren intervención)
 exclusiones:        # ruido a ignorar siempre
   - deportes
   - farandula
+  - sucesos
 ```
 
 ---
@@ -171,9 +176,14 @@ exclusiones:        # ruido a ignorar siempre
 
 ```
 # nombre            url-del-feed   → ver y editar bin/news-feeds.txt
-# El País           https://feeds.elpais.com/...
-# Reuters World     https://...
 # Hacker News       https://hnrss.org/frontpage
+# Ars Technica      https://feeds.arstechnica.com/arstechnica/index
+# Xataka            https://www.xataka.com/feedburner.xml
+# Genbeta           https://www.genbeta.com/feedburner.xml
+# The Hacker News   https://feeds.feedburner.com/TheHackersNews
+# Arch Linux News   https://archlinux.org/feeds/news/
+# El País Portada   https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
+# BBC Mundo         https://feeds.bbci.co.uk/mundo/rss.xml
 ```
 
 ---
