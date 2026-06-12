@@ -1,0 +1,89 @@
+# Publica wiki/ como sitio estático con Quartz 4 en GitHub Pages.
+#
+# El repo NO es un proyecto Quartz: en cada push a main que toque wiki/ este workflow
+# clona jackyzha0/quartz (rama v4), copia wiki/ como content/, inyecta nuestra
+# configuración (publish/quartz.config.ts) y despliega a GitHub Pages.
+#
+# Requisito (una sola vez): Settings → Pages → Source: "GitHub Actions".
+# Privacidad: wiki/sessions/ y las notas con `publish: false` no se publican
+# (ver publish/quartz.config.ts y docs/publicacion.md).
+name: Publicar wiki (Quartz 4)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "wiki/**"
+      - "publish/**"
+      - ".github/workflows/publish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del vault
+        uses: actions/checkout@v4
+        with:
+          path: vault
+          fetch-depth: 0 # historial completo para las fechas de git
+
+      - name: Checkout de Quartz 4
+        uses: actions/checkout@v4
+        with:
+          repository: jackyzha0/quartz
+          ref: v4
+          path: quartz
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Inyectar contenido y configuración
+        run: |
+          rm -rf quartz/content
+          mkdir quartz/content
+          cp -r vault/wiki/. quartz/content/
+          cp vault/publish/quartz.config.ts quartz/quartz.config.ts
+
+      - name: Instalar dependencias de Quartz
+        working-directory: quartz
+        run: npm ci
+
+      - name: Construir el sitio
+        working-directory: quartz
+        run: npx quartz build
+
+      - name: Verificar exclusiones de privacidad
+        run: |
+          set -e
+          if find quartz/public -path '*sessions*' | grep -q .; then
+            echo "ERROR: wiki/sessions/ se ha colado en el sitio publicado" >&2
+            exit 1
+          fi
+          echo "✓ sessions/ excluido del sitio"
+
+      - name: Subir artefacto de Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: quartz/public
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

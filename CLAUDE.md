@@ -78,6 +78,10 @@ No leas el vault entero para tareas triviales.
   ```
 - Carpetas: `wiki/concepts/`, `wiki/entities/`, `wiki/sources/`, `wiki/sources/news/`,
   `wiki/sessions/`. Plantillas en `_templates/` (incluye `noticia.md`).
+- **Publicación web**: `wiki/` se publica como sitio (Quartz 4, ver `docs/publicacion.md`).
+  Toda nota es publicable **salvo** que tenga `publish: false` en el frontmatter;
+  `wiki/sessions/` no se publica nunca. Si una nota contiene algo sensible, ponle
+  `publish: false` al crearla.
 
 ---
 
