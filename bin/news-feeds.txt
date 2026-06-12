@@ -5,12 +5,21 @@
 # - Prefiere RSS/Atom sobre scraping: es legal, estable y sin paywall.
 # - Las líneas que empiezan por '#' y las vacías se ignoran.
 #
-# Este archivo es la ÚNICA fuente de verdad de los feeds (CLAUDE.md §8 solo apunta aquí).
-# Antes de activar un feed, comprueba que responde:  bash bin/check-feeds.sh
-#
-# Feeds activos (elegidos el 2026-06-12; confirma que responden con: bash bin/check-feeds.sh)
-El País Portada|https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
-BBC Mundo|https://feeds.bbci.co.uk/mundo/rss.xml
-Xataka|https://www.xataka.com/feedburner.xml
+# Lo lee bin/cron-news-ingest.sh. Mantén esta lista alineada con CLAUDE.md §8.
+# Todas las fuentes de abajo fueron verificadas (HTTP 200) el 2026-06-12.
+
+# — Tecnología / IA —
 Hacker News|https://hnrss.org/frontpage
 Ars Technica|https://feeds.arstechnica.com/arstechnica/index
+Xataka|https://www.xataka.com/feedburner.xml
+Genbeta|https://www.genbeta.com/feedburner.xml
+
+# — Ciberseguridad —
+The Hacker News|https://feeds.feedburner.com/TheHackersNews
+
+# — Linux / Arch —
+Arch Linux News|https://archlinux.org/feeds/news/
+
+# — Actualidad general (España / mundo) —
+El País Portada|https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
+BBC Mundo|https://feeds.bbci.co.uk/mundo/rss.xml
