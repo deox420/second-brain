@@ -1,0 +1,115 @@
+# Publica wiki/ como sitio web estático con Quartz 4 en GitHub Pages.
+#
+# Diseño (PLAN-SESION.md, Fase 6 / M9): el repo NO se convierte en proyecto
+# Quartz — este workflow clona Quartz, copia wiki/ como contenido, lo configura
+# por sed y despliega. El vault queda limpio; Quartz es solo tooling de CI.
+#
+# Privacidad (aunque el repo sea público hoy):
+#   - wiki/sessions/ NUNCA se publica.
+#   - Cualquier nota con `publish: false` en el frontmatter queda fuera.
+# Migración futura a repo privado: ver docs/publicacion.md (Cloudflare Pages).
+name: publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "wiki/**"
+      - ".github/workflows/publish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  # La publicación es opt-in: hasta que el dueño del repo no habilite Pages
+  # (Settings → Pages → Source: GitHub Actions, o
+  #  `gh api repos/deox420/second-brain/pages -X POST -f build_type=workflow`),
+  # este workflow se salta el build/deploy sin marcar el CI en rojo.
+  comprobar:
+    runs-on: ubuntu-latest
+    outputs:
+      pages: ${{ steps.check.outputs.pages }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "pages=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pages=false" >> "$GITHUB_OUTPUT"
+            echo "GitHub Pages no está habilitado: se omite la publicación." \
+                 "Actívalo una vez y los siguientes pushes publicarán solos" \
+                 "(ver docs/publicacion.md)."
+          fi
+
+  build:
+    needs: comprobar
+    if: needs.comprobar.outputs.pages == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del vault
+        uses: actions/checkout@v4
+        with:
+          path: vault
+
+      - name: Checkout de Quartz 4
+        uses: actions/checkout@v4
+        with:
+          repository: jackyzha0/quartz
+          ref: v4
+          path: quartz
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Copiar wiki como contenido (con exclusiones de privacidad)
+        run: |
+          rm -rf quartz/content
+          mkdir -p quartz/content
+          rsync -a --exclude 'sessions/' vault/wiki/ quartz/content/
+          # Fuera toda nota marcada publish: false en el frontmatter
+          grep -rlZ --include='*.md' -E '^publish:[[:space:]]*false' quartz/content/ \
+            | xargs -0 -r rm -- || true
+          echo "Notas publicadas: $(find quartz/content -name '*.md' | wc -l)"
+
+      - name: Configurar Quartz (título, idioma, baseUrl)
+        run: |
+          cd quartz
+          sed -i 's|pageTitle: .*|pageTitle: "Segundo cerebro — deox",|' quartz.config.ts
+          sed -i 's|locale: .*|locale: "es-ES",|' quartz.config.ts
+          sed -i 's|baseUrl: .*|baseUrl: "deox420.github.io/second-brain",|' quartz.config.ts
+          grep -E 'pageTitle|locale|baseUrl' quartz.config.ts
+
+      - name: Build
+        run: |
+          cd quartz
+          npm ci
+          npx quartz build
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir artefacto
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: quartz/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
