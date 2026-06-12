@@ -8,10 +8,9 @@
 # Este archivo es la ÚNICA fuente de verdad de los feeds (CLAUDE.md §8 solo apunta aquí).
 # Antes de activar un feed, comprueba que responde:  bash bin/check-feeds.sh
 #
-# Ejemplos (descoméntalos y/o sustitúyelos por tus feeds reales; verifica antes con check-feeds):
-#
-# El País Portada|https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
-# BBC Mundo|https://feeds.bbci.co.uk/mundo/rss.xml
-# Xataka|https://www.xataka.com/feedburner.xml
-# Hacker News|https://hnrss.org/frontpage
-# Ars Technica|https://feeds.arstechnica.com/arstechnica/index
+# Feeds activos (elegidos el 2026-06-12; confirma que responden con: bash bin/check-feeds.sh)
+El País Portada|https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
+BBC Mundo|https://feeds.bbci.co.uk/mundo/rss.xml
+Xataka|https://www.xataka.com/feedburner.xml
+Hacker News|https://hnrss.org/frontpage
+Ars Technica|https://feeds.arstechnica.com/arstechnica/index

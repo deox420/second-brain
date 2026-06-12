@@ -25,6 +25,7 @@ Este folder es a la vez un plugin de Claude Code y un vault de Obsidian. Las ski
 | `/autoresearch [tema]` | Investigación web autónoma: busca, sintetiza y archiva |
 | `/canvas` | Capa visual: añade imágenes, PDFs y notas a un canvas de Obsidian |
 | **`/news` / "Procesa las noticias de hoy"** | **Ingesta diaria de noticias (capa propia) → `wiki-news` (ver §4)** |
+| **`/news-semana [YYYY-WW]`** | **Radar semanal (capa propia): sintetiza los radares diarios de la semana en `wiki/sources/news/semana-YYYY-WW.md`** |
 | `/wiki-cli`, `/wiki-retrieve`, `/wiki-mode`, `/think`, `/wiki-fold` | Funciones avanzadas de la base (transporte CLI, retrieval híbrido, modos metodológicos, loop de pensamiento, folds). Opt-in. |
 
 **Transporte (base):** antes de mutar un archivo del vault, consulta `.vault-meta/transport.json`
@@ -143,17 +144,15 @@ recurrir a búsqueda web. (Detalle: `skills/wiki-query/SKILL.md`.)
 
 ---
 
-## 7. Temas de interés  ← EDITAR
+## 7. Temas de interés
 
-> Personaliza esto. Es el filtro que decide qué noticia entra y qué se descarta.
+> Es el filtro que decide qué noticia entra y qué se descarta. Edítalo cuando cambien tus intereses.
 
 ```yaml
 temas:
-  - economia        # ej: política monetaria, mercados
-  - tecnologia      # ej: IA, software
-  - geopolitica
-  - ciencia
-  # añade o quita libremente
+  - tecnologia      # IA, software, hardware, startups
+  - geopolitica     # relaciones internacionales, conflictos, UE
+  - ciencia         # investigación, espacio, salud, clima
 prioridad_alta:     # estos nunca se descartan
   - ia
 exclusiones:        # ruido a ignorar siempre

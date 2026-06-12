@@ -23,9 +23,10 @@
 # Solo recolectar (sin llamar a Claude):   NO_CLAUDE=1 bash bin/cron-news-ingest.sh
 # Modelo del radar (barato por defecto):   NEWS_MODEL=haiku  (exporta otro si lo prefieres)
 #
-# Ejemplo de crontab (todos los días a las 07:30, y el lint semanal los domingos a las 08:00):
+# Ejemplo de crontab (diario 07:30; domingos: lint 08:00 y radar semanal 08:30):
 #   30 7 * * *  cd /ruta/al/vault && bash bin/cron-news-ingest.sh >> .vault-meta/news-cron.log 2>&1
 #   0  8 * * 0  cd /ruta/al/vault && claude -p "Ejecuta el lint semanal del vault" --permission-mode acceptEdits >> .vault-meta/lint-cron.log 2>&1
+#   30 8 * * 0  cd /ruta/al/vault && claude -p "Genera el radar semanal de noticias (comando /news-semana)" --model haiku --permission-mode acceptEdits >> .vault-meta/news-cron.log 2>&1
 
 set -euo pipefail
 
