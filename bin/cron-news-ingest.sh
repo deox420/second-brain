@@ -11,7 +11,8 @@
 # Este script NO escribe en wiki/: solo deja material crudo y llama a Claude. El filtrado,
 # resumen, deduplicado y la nota diaria los hace la skill wiki-news.
 #
-# Requisitos: bash, curl, python3 (xml stdlib). 'claude' (Claude Code CLI) en el PATH.
+# Requisitos: bash >= 4 (mapfile), curl, python3 (stdlib). 'claude' (Claude Code CLI) en el PATH.
+# El parseo RSS/Atom vive en bin/parse-feed.py (testeable de forma aislada).
 #
 # Uso manual:   bash bin/cron-news-ingest.sh
 # Solo recolectar (sin llamar a Claude):   NO_CLAUDE=1 bash bin/cron-news-ingest.sh
@@ -27,6 +28,9 @@ VAULT="$(dirname "$SCRIPT_DIR")"
 FEEDS="$VAULT/bin/news-feeds.txt"
 DATE="$(date +%Y-%m-%d)"
 RAW_DIR="$VAULT/.raw/news/$DATE"
+# Registro persistente de items vistos: evita duplicados entre días consecutivos
+# (la ventana de frescura de ~28h solapa con el día anterior). Lo gestiona parse-feed.py.
+SEEN_FILE="$VAULT/.vault-meta/news-seen.txt"
 
 cd "$VAULT"
 
@@ -57,80 +61,9 @@ for line in "${LINES[@]}"; do
   xml="$(curl -fsSL --max-time 30 -A 'second-brain-news/1.0' "$url" 2>/dev/null || true)"
   [ -z "$xml" ] && { echo "    (sin respuesta, se omite)"; continue; }
 
-  # Parseo de RSS/Atom con python3 (stdlib). Emite un archivo por item reciente.
-  printf '%s' "$xml" | FEED_NAME="$name" RAW_DIR="$RAW_DIR" python3 - "$DATE" <<'PY'
-import os, sys, re, html, hashlib, datetime as dt
-import xml.etree.ElementTree as ET
-
-date_str = sys.argv[1]
-feed = os.environ.get("FEED_NAME", "fuente")
-raw_dir = os.environ["RAW_DIR"]
-data = sys.stdin.read()
-
-def strip_ns(tag): return tag.split('}')[-1].lower()
-def text(el): return (el.text or "").strip() if el is not None else ""
-
-try:
-    root = ET.fromstring(data)
-except ET.ParseError:
-    sys.exit(0)
-
-# Recolecta items (RSS <item>) y entries (Atom <entry>).
-items = [e for e in root.iter() if strip_ns(e.tag) in ("item", "entry")]
-
-now = dt.datetime.now(dt.timezone.utc)
-window = dt.timedelta(hours=28)
-written = 0
-
-def parse_date(s):
-    s = s.strip()
-    for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z",
-                "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d"):
-        try:
-            d = dt.datetime.strptime(s.replace("GMT", "+0000"), fmt)
-            if d.tzinfo is None: d = d.replace(tzinfo=dt.timezone.utc)
-            return d
-        except ValueError:
-            continue
-    return None
-
-for it in items:
-    title = link = pub = desc = ""
-    for ch in it:
-        t = strip_ns(ch.tag)
-        if t == "title" and not title: title = text(ch)
-        elif t == "link" and not link:
-            link = text(ch) or ch.attrib.get("href", "")
-        elif t in ("pubdate", "published", "updated", "date") and not pub:
-            pub = text(ch)
-        elif t in ("description", "summary", "content") and not desc:
-            desc = text(ch)
-    if not title:
-        continue
-    # Filtro temporal: si hay fecha y es vieja, se descarta; sin fecha, se acepta.
-    d = parse_date(pub) if pub else None
-    if d is not None and (now - d) > window:
-        continue
-    desc = re.sub(r"<[^>]+>", " ", html.unescape(desc))
-    desc = re.sub(r"\s+", " ", desc).strip()[:1200]
-    slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60] or "item"
-    h = hashlib.sha1((link or title).encode()).hexdigest()[:8]
-    path = os.path.join(raw_dir, f"{slug}-{h}.md")
-    if os.path.exists(path):
-        continue
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("---\n")
-        f.write(f'titulo: "{title.replace(chr(34), chr(39))}"\n')
-        f.write(f"fuente: {feed}\n")
-        f.write(f"url: {link}\n")
-        f.write(f"fecha: {date_str}\n")
-        f.write(f"publicado: {pub}\n")
-        f.write("---\n\n")
-        f.write(f"# {title}\n\n{desc}\n")
-    written += 1
-
-print(f"    {written} items")
-PY
+  # Parseo de RSS/Atom con el parser externo (bin/parse-feed.py).
+  # NOTA: no usar heredoc aquí — pisaría el pipe de stdin (bug histórico B1).
+  printf '%s' "$xml" | FEED_NAME="$name" RAW_DIR="$RAW_DIR" SEEN_FILE="$SEEN_FILE" python3 "$VAULT/bin/parse-feed.py" "$DATE"
   count=$((count + 1))
 done
 
