@@ -3,35 +3,50 @@
 #
 # Qué hace:
 #   1. Lee las fuentes RSS de bin/news-feeds.txt.
-#   2. Descarga cada feed y vuelca los items recientes (últimas ~28h) como archivos
-#      Markdown crudos en .raw/news/YYYY-MM-DD/ (uno por item, con frontmatter).
+#   2. Descarga cada feed y delega el parseo en bin/parse-feed.py, que vuelca los
+#      items recientes (últimas ~28h) como Markdown crudo en .raw/news/YYYY-MM-DD/
+#      (uno por item, con frontmatter), deduplicando contra .vault-meta/news-seen.txt
+#      para que un item no se repita entre días consecutivos.
 #   3. Invoca `claude -p "Procesa las noticias de hoy"` en el vault, que dispara la
 #      skill wiki-news (ver skills/wiki-news/SKILL.md y CLAUDE.md §4).
 #
 # Este script NO escribe en wiki/: solo deja material crudo y llama a Claude. El filtrado,
-# resumen, deduplicado y la nota diaria los hace la skill wiki-news.
+# resumen, deduplicado temático y la nota diaria los hace la skill wiki-news.
 #
-# Requisitos: bash, curl, python3 (xml stdlib). 'claude' (Claude Code CLI) en el PATH.
+# Requisitos: bash >= 4 (mapfile; este proyecto asume Linux), curl, python3 (stdlib).
+# 'claude' (Claude Code CLI) en el PATH para el paso 3.
 #
 # Uso manual:   bash bin/cron-news-ingest.sh
 # Solo recolectar (sin llamar a Claude):   NO_CLAUDE=1 bash bin/cron-news-ingest.sh
+# Variables opcionales:
+#   FEEDS_FILE  ruta alternativa a la lista de feeds (para tests)
+#   SEEN_FILE   ruta alternativa al registro de items vistos (para tests)
+#   NEWS_MODEL  modelo para la sesión headless (por defecto: haiku, barato)
 #
-# Ejemplo de crontab (todos los días a las 07:30, y el lint semanal los domingos a las 08:00):
-#   30 7 * * *  cd /ruta/al/vault && /usr/bin/bash bin/cron-news-ingest.sh >> .vault-meta/news-cron.log 2>&1
-#   0  8 * * 0  cd /ruta/al/vault && claude -p "Ejecuta el lint semanal del vault" >> .vault-meta/lint-cron.log 2>&1
+# Automatización: en este equipo corre como timer de systemd de usuario
+# (~/.config/systemd/user/second-brain-news.timer, diario 07:30, Persistent=true).
+# Equivalente crontab si se prefiere cron:
+#   30 7 * * *  cd /ruta/al/vault && bash bin/cron-news-ingest.sh >> .vault-meta/news-cron.log 2>&1
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VAULT="$(dirname "$SCRIPT_DIR")"
-FEEDS="$VAULT/bin/news-feeds.txt"
+FEEDS="${FEEDS_FILE:-$VAULT/bin/news-feeds.txt}"
+SEEN="${SEEN_FILE:-$VAULT/.vault-meta/news-seen.txt}"
 DATE="$(date +%Y-%m-%d)"
 RAW_DIR="$VAULT/.raw/news/$DATE"
+LOG="$VAULT/.vault-meta/news-cron.log"
 
 cd "$VAULT"
 
+# Rotación simple del log: conservar las últimas 2000 líneas.
+if [ -f "$LOG" ] && [ "$(wc -l < "$LOG")" -gt 2000 ]; then
+  tail -n 1000 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
+fi
+
 if [ ! -f "$FEEDS" ]; then
-  echo "No existe $FEEDS. Crea la lista de feeds (ver CLAUDE.md §8)." >&2
+  echo "No existe $FEEDS. Crea la lista de feeds (formato nombre|url)." >&2
   exit 1
 fi
 
@@ -42,10 +57,11 @@ if [ "${#LINES[@]}" -eq 0 ]; then
   exit 1
 fi
 
-mkdir -p "$RAW_DIR"
-echo "Recolectando noticias en $RAW_DIR ($(date '+%H:%M'))"
+mkdir -p "$RAW_DIR" "$(dirname "$SEEN")"
+echo "[$DATE $(date '+%H:%M')] Recolectando noticias en $RAW_DIR"
 
-count=0
+ok=0
+fail=0
 for line in "${LINES[@]}"; do
   name="${line%%|*}"
   url="${line#*|}"
@@ -55,93 +71,25 @@ for line in "${LINES[@]}"; do
 
   echo "  · $name"
   xml="$(curl -fsSL --max-time 30 -A 'second-brain-news/1.0' "$url" 2>/dev/null || true)"
-  [ -z "$xml" ] && { echo "    (sin respuesta, se omite)"; continue; }
+  if [ -z "$xml" ]; then
+    echo "    (sin respuesta, se omite)"
+    fail=$((fail + 1))
+    continue
+  fi
 
-  # Parseo de RSS/Atom con python3 (stdlib). Emite un archivo por item reciente.
-  # El XML viaja por archivo temporal: el heredoc ya ocupa stdin (es el programa),
-  # así que una tubería aquí nunca llegaría a Python.
-  xml_tmp="$(mktemp)"
-  printf '%s' "$xml" > "$xml_tmp"
-  FEED_NAME="$name" RAW_DIR="$RAW_DIR" XML_FILE="$xml_tmp" python3 - "$DATE" <<'PY'
-import os, sys, re, html, hashlib, datetime as dt
-import xml.etree.ElementTree as ET
-
-date_str = sys.argv[1]
-feed = os.environ.get("FEED_NAME", "fuente")
-raw_dir = os.environ["RAW_DIR"]
-with open(os.environ["XML_FILE"], encoding="utf-8", errors="replace") as fh:
-    data = fh.read()
-
-def strip_ns(tag): return tag.split('}')[-1].lower()
-def text(el): return (el.text or "").strip() if el is not None else ""
-
-try:
-    root = ET.fromstring(data)
-except ET.ParseError:
-    sys.exit(0)
-
-# Recolecta items (RSS <item>) y entries (Atom <entry>).
-items = [e for e in root.iter() if strip_ns(e.tag) in ("item", "entry")]
-
-now = dt.datetime.now(dt.timezone.utc)
-window = dt.timedelta(hours=28)
-written = 0
-
-def parse_date(s):
-    s = s.strip()
-    for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z",
-                "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d"):
-        try:
-            d = dt.datetime.strptime(s.replace("GMT", "+0000"), fmt)
-            if d.tzinfo is None: d = d.replace(tzinfo=dt.timezone.utc)
-            return d
-        except ValueError:
-            continue
-    return None
-
-for it in items:
-    title = link = pub = desc = ""
-    for ch in it:
-        t = strip_ns(ch.tag)
-        if t == "title" and not title: title = text(ch)
-        elif t == "link" and not link:
-            link = text(ch) or ch.attrib.get("href", "")
-        elif t in ("pubdate", "published", "updated", "date") and not pub:
-            pub = text(ch)
-        elif t in ("description", "summary", "content") and not desc:
-            desc = text(ch)
-    if not title:
-        continue
-    # Filtro temporal: si hay fecha y es vieja, se descarta; sin fecha, se acepta.
-    d = parse_date(pub) if pub else None
-    if d is not None and (now - d) > window:
-        continue
-    desc = re.sub(r"<[^>]+>", " ", html.unescape(desc))
-    desc = re.sub(r"\s+", " ", desc).strip()[:1200]
-    slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60] or "item"
-    h = hashlib.sha1((link or title).encode()).hexdigest()[:8]
-    path = os.path.join(raw_dir, f"{slug}-{h}.md")
-    if os.path.exists(path):
-        continue
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("---\n")
-        f.write(f'titulo: "{title.replace(chr(34), chr(39))}"\n')
-        f.write(f"fuente: {feed}\n")
-        f.write(f"url: {link}\n")
-        f.write(f"fecha: {date_str}\n")
-        f.write(f"publicado: {pub}\n")
-        f.write("---\n\n")
-        f.write(f"# {title}\n\n{desc}\n")
-    written += 1
-
-print(f"    {written} items")
-PY
-  rm -f "$xml_tmp"
-  count=$((count + 1))
+  # Parseo RSS/Atom en bin/parse-feed.py (testeable de forma aislada).
+  # NOTA: nada de heredoc con `python3 -` aquí — pisaría la tubería (bug histórico B1).
+  if printf '%s' "$xml" | FEED_NAME="$name" RAW_DIR="$RAW_DIR" SEEN_FILE="$SEEN" \
+       python3 "$VAULT/bin/parse-feed.py" "$DATE"; then
+    ok=$((ok + 1))
+  else
+    echo "    (error de parseo, se omite)"
+    fail=$((fail + 1))
+  fi
 done
 
 n_items="$(find "$RAW_DIR" -type f -name '*.md' | wc -l | tr -d ' ')"
-echo "Feeds procesados: $count | items crudos: $n_items"
+echo "Feeds OK: $ok | fallidos: $fail | items crudos del día: $n_items"
 
 if [ "${NO_CLAUDE:-0}" = "1" ]; then
   echo "NO_CLAUDE=1: no se invoca Claude. Lanza /news manualmente cuando quieras."
@@ -159,5 +107,5 @@ if [ "$n_items" -eq 0 ]; then
   exit 0
 fi
 
-echo "Invocando Claude para procesar el radar del día..."
-claude -p "Procesa las noticias de hoy"
+echo "Invocando Claude para procesar el radar del día (modelo: ${NEWS_MODEL:-haiku})..."
+claude -p "Procesa las noticias de hoy" --model "${NEWS_MODEL:-haiku}"
