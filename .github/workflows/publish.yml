@@ -28,7 +28,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Publicar es opt-in: hasta que el dueño no habilite Pages
+  # (Settings → Pages → Source: "GitHub Actions"), se omite el build/deploy en
+  # vez de fallar en rojo. Así un push a wiki/ no rompe el CI mientras decides.
+  comprobar:
+    runs-on: ubuntu-latest
+    outputs:
+      pages: ${{ steps.check.outputs.pages }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "pages=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pages=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::GitHub Pages no está habilitado; se omite la publicación. Actívalo en Settings → Pages → Source: GitHub Actions (ver docs/publicacion.md)."
+          fi
+
   build:
+    needs: comprobar
+    if: needs.comprobar.outputs.pages == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del vault

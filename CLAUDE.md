@@ -158,14 +158,20 @@ recurrir a búsqueda web. (Detalle: `skills/wiki-query/SKILL.md`.)
 
 ```yaml
 temas:
-  - tecnologia      # IA, software, hardware, startups
-  - geopolitica     # relaciones internacionales, conflictos, UE
+  - tecnologia      # software, hardware, internet, startups
+  - ia              # modelos, herramientas, industria
+  - ciberseguridad  # vulnerabilidades, pentesting, wifi/redes
+  - linux           # Arch, Hyprland, ecosistema open source
   - ciencia         # investigación, espacio, salud, clima
+  - actualidad-es   # España: solo lo relevante, sin ruido diario
 prioridad_alta:     # estos nunca se descartan
   - ia
+  - ciberseguridad
+  - arch-linux      # avisos oficiales de Arch (actualizaciones que requieren intervención)
 exclusiones:        # ruido a ignorar siempre
   - deportes
   - farandula
+  - sucesos
 ```
 
 ---

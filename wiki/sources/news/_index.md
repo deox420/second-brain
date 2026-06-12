@@ -1,7 +1,7 @@
 ---
 type: meta
 title: "Índice de noticias (radar)"
-updated: 2026-06-01
+updated: 2026-06-12
 tags:
   - meta
   - index
@@ -26,4 +26,4 @@ Ver el protocolo completo en `CLAUDE.md` §4.
 
 ## Notas diarias
 
-<!-- Cada ingesta diaria añade aquí su línea: - [[YYYY-MM-DD]] — temas tratados. -->
+- [[2026-06-12]] — Ciberseguridad e IA (AUR hijacking, Linux backdoors, agentjacking, LangGraph RCE, OpenClaw attacks, Google vs cybercrime, ShinyHunters, GreatXML, MDR + IA), infraestructura IA China, CRISPR cancer
