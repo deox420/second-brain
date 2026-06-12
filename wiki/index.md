@@ -1,7 +1,7 @@
 ---
 type: meta
 title: "Índice del wiki"
-updated: 2026-06-01
+updated: 2026-06-12
 tags:
   - meta
   - index
@@ -20,7 +20,7 @@ related:
 
 # Índice del wiki
 
-Última actualización: 2026-06-01 | Páginas totales: 0 | Fuentes ingeridas: 0
+Última actualización: 2026-06-12 | Páginas totales: 1 | Fuentes ingeridas: 1
 
 Navegación: [[overview]] | [[log]] | [[hot]] | [[getting-started]]
 
