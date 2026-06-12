@@ -28,6 +28,7 @@ Navegación: [[index]] | [[log]] | [[overview]]
 
 ## Cambios recientes
 
+- 2026-06-12: Procesamiento de inbox (3 items: async/await en Rust, aircrack-ng, fotosíntesis artificial).
 - 2026-06-12: Primera nota diaria de noticias creada (8 items).
 - 2026-06-01: scaffolding inicial del vault.
 

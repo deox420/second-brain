@@ -75,7 +75,7 @@ jobs:
         run: |
           rm -rf quartz/content
           mkdir -p quartz/content
-          rsync -a --exclude 'sessions/' vault/wiki/ quartz/content/
+          rsync -a --exclude 'sessions/' --exclude 'inbox/' vault/wiki/ quartz/content/
           # Fuera toda nota marcada publish: false en el frontmatter
           grep -rlZ --include='*.md' -E '^publish:[[:space:]]*false' quartz/content/ \
             | xargs -0 -r rm -- || true

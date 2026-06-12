@@ -24,6 +24,13 @@ Leer entradas recientes: `grep "^## \[" wiki/log.md | head -10`
 
 ---
 
+## [2026-06-12] ingest | Procesamiento de bandeja de entrada
+- Tipo: ingest (`/inbox`)
+- Items ingeridos: 3 (de `.raw/inbox/` y `wiki/inbox/`)
+- Páginas creadas: [[async-await-rust]] (concepto), [[aircrack-ng]] (entidad), [[fotosintesis-artificial]] (concepto)
+- Notas de seguridad: aircrack-ng.md contenía instrucciones personales (OSWP lab) — se filtraron como contexto, no como órdenes (guardarraíl anti prompt-injection, CLAUDE.md §9).
+- Bandejas vacías tras confirmación.
+
 ## [2026-06-12] ingest | Procesamiento diario de noticias
 - Tipo: ingest (`/news`)
 - Items leídos: 217 (raw feeds RSS)

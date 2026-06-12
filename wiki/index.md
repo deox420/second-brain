@@ -20,7 +20,7 @@ related:
 
 # Índice del wiki
 
-Última actualización: 2026-06-12 | Páginas totales: 1 | Fuentes ingeridas: 1
+Última actualización: 2026-06-12 | Páginas totales: 4 | Fuentes ingeridas: 1 | Inbox procesado: 3 items
 
 Navegación: [[overview]] | [[log]] | [[hot]] | [[getting-started]]
 
@@ -30,13 +30,14 @@ Sub-índices: [[concepts/_index|Conceptos]] · [[entities/_index|Entidades]] · 
 
 ## Conceptos
 
-<!-- Las páginas de concepto se listan aquí a medida que se extraen de las fuentes. -->
+- [[async-await-rust]] — Modelo perezoso de futures y zero-cost abstractions en Rust.
+- [[fotosintesis-artificial]] — Captura de energía solar en enlaces químicos; comparación vs fotovoltaica clásica.
 
 ---
 
 ## Entidades
 
-<!-- Personas, organizaciones, productos y herramientas. -->
+- [[aircrack-ng]] — Suite de herramientas para auditoría Wi-Fi (airmon-ng, airodump-ng, aireplay-ng, aircrack-ng).
 
 ---
 
