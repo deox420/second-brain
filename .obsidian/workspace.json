@@ -14,7 +14,7 @@
               "type": "graph",
               "state": {},
               "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "title": "Vista gráfica"
             }
           }
         ]
@@ -40,7 +40,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "Explorador de archivos"
             }
           },
           {
@@ -177,15 +177,32 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "obsidian-excalidraw-plugin:Nuevo Bosquejo": false,
+      "switcher:Abrir selector rápido": false,
+      "graph:Abrir vista gráfica": false,
+      "canvas:Crear nuevo lienzo": false,
+      "daily-notes:Abrir la nota de hoy": false,
+      "templates:Insertar plantilla": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Crear nueva base": false
     }
   },
   "active": "a31de1b302cdc5cf",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "bin/cron-news-ingest.sh.tmp.7374.42f602378fc7",
+    "bin/setup-vault.sh.tmp.7374.32fd6f6245e9",
+    "wiki/hot.md.tmp.29828.a17b3530acbb",
+    "wiki/log.md.tmp.29828.f59e9e7fc1c4",
+    "wiki/index.md.tmp.29828.51e05f54ec44",
+    "wiki/sources/news/_index.md.tmp.29828.991c37e7c794",
+    "wiki/sources/news/2026-06-12.md",
+    "wiki/sources/news/2026-06-12.md.tmp.29828.0b0087ead235",
+    "CLAUDE.md.tmp.7374.21db301e3807",
+    "commands/news.md.tmp.7374.00c1d8ba96df",
+    "bin/cron-news-ingest.sh.tmp.7374.196748700dd3",
+    "wiki/test-headless.md",
+    "wiki/test-headless.md.tmp.28266.ab55bfddc518",
+    "PLAN-SESION.md",
+    "wiki/sessions/_index.md"
+  ]
 }

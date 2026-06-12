@@ -1,11 +1,14 @@
 ---
 description: Procesa el lote de noticias del día. Lee los items crudos de .raw/news/<fecha>/, filtra por los temas de interés, deduplica, resume en español y escribe la nota diaria del radar en wiki/sources/news/<fecha>.md.
+argument-hint: "[YYYY-MM-DD]"
 ---
 
 Lee la skill `wiki-news`. Luego ejecuta el protocolo de ingesta diaria de noticias.
 
+Argumento recibido: `$ARGUMENTS`
+
 Uso:
-- `/news` — procesa las noticias de **hoy** (`.raw/news/<hoy>/`).
+- `/news` — sin argumento: procesa las noticias de **hoy** (`.raw/news/<hoy>/`).
 - `/news YYYY-MM-DD` — procesa el lote de esa fecha.
 
 Antes de empezar, lee los TEMAS DE INTERÉS en `CLAUDE.md` (§7): son el filtro que decide qué

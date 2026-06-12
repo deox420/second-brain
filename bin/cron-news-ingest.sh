@@ -119,3 +119,19 @@ claude -p "Procesa las noticias de hoy" --model "${NEWS_MODEL:-haiku}" \
     "Bash(rm -rf .raw/news/*)" "Bash(rm .raw/news/*)" \
     "Bash(ls *)" "Bash(find .raw *)" "Bash(find wiki *)" \
     "Bash(cat *)" "Bash(grep *)" "Bash(wc *)"
+
+# Persistencia determinista: si el radar escribió la nota del día, se commitea y
+# se sube aquí (no se delega en el modelo ni en hooks, que en headless no corren).
+# El push alimenta la publicación web (workflow de Pages); si falla (sin red,
+# sin credenciales) no rompe el cron: quedará pendiente para el día siguiente.
+NOTE="wiki/sources/news/$DATE.md"
+if [ -f "$NOTE" ] && [ -d .git ]; then
+  git add wiki/ 2>/dev/null || true
+  if ! git diff --cached --quiet -- wiki/ 2>/dev/null; then
+    git commit -q -m "radar: noticias $DATE" -- wiki/ || true
+    git push -q origin "$(git rev-parse --abbrev-ref HEAD)" 2>/dev/null \
+      || echo "Aviso: push no realizado (se reintentará en el próximo run)."
+  fi
+  # Limpieza de crudos solo tras confirmar que la nota del día existe.
+  rm -rf ".raw/news/$DATE"
+fi

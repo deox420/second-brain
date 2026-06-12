@@ -1,40 +1,37 @@
-# Obsidian
-# workspace.json is intentionally tracked — ships with pre-configured graph view
-# .obsidian/workspace.json
+# ── Obsidian ──────────────────────────────────────────────────────────────────
+# workspace.json se versiona a propósito: trae la vista de grafo preconfigurada
 .obsidian/workspace-mobile.json
 .obsidian/workspace-visual.json
 .obsidian/plugins/*/data.json
 !.obsidian/plugins/calendar/data.json
 !.obsidian/plugins/thino/data.json
 
-# Excalidraw main.js is 8MB — downloaded by setup-vault.sh, not tracked in git
+# Excalidraw main.js pesa ~8MB — lo descarga bin/setup-vault.sh, no se versiona
 .obsidian/plugins/obsidian-excalidraw-plugin/main.js
 
-# Large binary assets — add your own images to _attachments/images/
-# Uncomment the line below to exclude images from git (recommended for large vaults)
-# _attachments/images/
 .smart-connections/
 .obsidian-git-data
 .trash/
 
-# System
+# Notas diarias del plugin Calendar (en la raíz)…
+????-??-??.md
+# …pero SÍ se versionan las notas del radar diario de noticias
+!wiki/sources/news/????-??-??.md
+
+# ── Sistema ───────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 
-# Python
+# ── Python / Node ─────────────────────────────────────────────────────────────
 __pycache__/
 *.pyc
 .venv/
-
-# Node
 node_modules/
 
-# Local secrets
+# ── Secretos y credenciales (defensa en profundidad) ─────────────────────────
 .env
 .env.local
 *.local.md
-
-# Private keys and credentials (defense-in-depth, catches accidental drops)
 *.pem
 *.key
 *.p12
@@ -48,77 +45,18 @@ credentials*
 secrets.y*ml
 auth.json
 
-# Personal files dropped into vault root by Obsidian (don't commit these)
-WIKI*.md
-PROMPT.md
-Welcome.md
-*.tmp.*
-Obsidian vault*
-Untitled.canvas
-Cosmic Brain*.gif
-Cosmic Brain*.png
-Untitled *.canvas
-Untitled.base
-*.base
-# Track our committed dashboard.base (Bases dashboard shipped with the vault)
-!wiki/meta/dashboard.base
+# ── Material crudo ────────────────────────────────────────────────────────────
+# Items del radar de noticias: efímeros, los limpia la skill wiki-news
+.raw/news/
+# Bandeja de captura móvil: efímera, la limpia /inbox
+.raw/inbox/*
+!.raw/inbox/.gitkeep
 
-# Scratch canvases and personal vault files
-Banana Images.canvas
-Demo Images.canvas
-*Images.canvas
-
-# Daily notes created by Calendar plugin
-????-??-??.md
-# ...but DO track the daily news radar notes (capa propia de ingesta de noticias)
-!wiki/sources/news/????-??-??.md
-
-# Video and large media files
-*.mkv
-*.mp4
-*.mov
-*.avi
-
-# Transcripts (copyright — do not commit)
-*Trascipt*.txt
-*Transcript*.txt
-
-# Personal images dropped in vault root
-cosmic code.png
-_attachments/code-genesis.png
-_attachments/neural-voyager.png
-_attachments/the-frontier.png
-
-# Excalidraw drawings (personal, user-specific)
-Excalidraw/
-
-# Loose brand/personal GIFs and images in vault root (not _attachments/)
-Claude SEO*.gif
-Claude SEO*.png
-
-# Private Skool Hub assets — not for public repos
-_attachments/images/skool-hub/
-
-# Archive of old versions (cosmic-brain, GIF assets)
-claude-obsidian-archive/
-
-# Sibling-plugin marketing assets that landed in working tree (claude-canvas covers / tutorials)
-claude-canvas-covers and stuff/
-claude-canvas/
-
-# Codex CLI sentinel marker (0-byte read-only file created by `codex` runs)
-.codex
-
-# User-specific attachments
-_attachments/
-
-# DragonScale runtime lockfiles and local caches (flock + embedding cache; state files like counter.txt and thresholds.json ARE tracked)
+# ── Runtime de .vault-meta (regenerable / específico del equipo) ──────────────
 .vault-meta/.address.lock
 .vault-meta/.tiling.lock
 .vault-meta/tiling-cache.json
 .vault-meta/tiling-cache.*.tmp
-
-# v1.7 Compound Vault runtime artifacts (regenerable; host-specific)
 .vault-meta/.wiki-lock.meta
 .vault-meta/.bm25.lock
 .vault-meta/.embed-cache.lock
@@ -131,9 +69,13 @@ _attachments/
 .vault-meta/transport.json
 .vault-meta/transport.*.tmp
 .vault-meta/hook.log
-# v1.8 methodology mode (host-specific by default; `git add -f` to commit if desired)
 .vault-meta/mode.json
 .vault-meta/mode.*.tmp
+.vault-meta/news-seen.txt
+.vault-meta/*.log
 
-# Items crudos del radar de noticias (efimeros, los limpia la skill wiki-news)
-.raw/news/
+# Vídeo y media pesada
+*.mkv
+*.mp4
+*.mov
+*.avi

@@ -168,23 +168,12 @@ exclusiones:        # ruido a ignorar siempre
 
 ---
 
-## 8. Fuentes de noticias (RSS)  ← EDITAR
+## 8. Fuentes de noticias (RSS)
 
-> El cron lee la lista de feeds desde **`bin/news-feeds.txt`** (formato `nombre|url`).
-> Edita ese archivo, no esta sección. Prefiere RSS sobre scraping (legal, estable, sin paywall).
-> Mantén ambos sitios coherentes si anotas feeds aquí como referencia.
-
-```
-# nombre            url-del-feed   → ver y editar bin/news-feeds.txt
-# Hacker News       https://hnrss.org/frontpage
-# Ars Technica      https://feeds.arstechnica.com/arstechnica/index
-# Xataka            https://www.xataka.com/feedburner.xml
-# Genbeta           https://www.genbeta.com/feedburner.xml
-# The Hacker News   https://feeds.feedburner.com/TheHackersNews
-# Arch Linux News   https://archlinux.org/feeds/news/
-# El País Portada   https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
-# BBC Mundo         https://feeds.bbci.co.uk/mundo/rss.xml
-```
+> **Fuente única de verdad: `bin/news-feeds.txt`** (formato `nombre|url`, una por línea).
+> Edita ese archivo y solo ese archivo; aquí no se mantiene ninguna copia para que
+> no haya nada que desincronizar. Prefiere RSS/Atom sobre scraping (legal, estable,
+> sin paywall) y verifica con `curl` que un feed responde antes de añadirlo.
 
 ---
 
