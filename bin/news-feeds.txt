@@ -5,12 +5,13 @@
 # - Prefiere RSS/Atom sobre scraping: es legal, estable y sin paywall.
 # - Las líneas que empiezan por '#' y las vacías se ignoran.
 #
-# Lo lee bin/cron-news-ingest.sh. Mantén esta lista alineada con CLAUDE.md §8.
+# Este archivo es la ÚNICA fuente de verdad de los feeds (CLAUDE.md §8 solo apunta aquí).
+# Antes de activar un feed, comprueba que responde:  bash bin/check-feeds.sh
 #
-# Ejemplos (descoméntalos y/o sustitúyelos por tus feeds reales):
+# Ejemplos (descoméntalos y/o sustitúyelos por tus feeds reales; verifica antes con check-feeds):
 #
 # El País Portada|https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
-# Reuters World|https://feeds.reuters.com/Reuters/worldNews
+# BBC Mundo|https://feeds.bbci.co.uk/mundo/rss.xml
+# Xataka|https://www.xataka.com/feedburner.xml
 # Hacker News|https://hnrss.org/frontpage
 # Ars Technica|https://feeds.arstechnica.com/arstechnica/index
-# BBC Mundo|https://feeds.bbci.co.uk/mundo/rss.xml

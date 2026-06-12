@@ -163,18 +163,11 @@ exclusiones:        # ruido a ignorar siempre
 
 ---
 
-## 8. Fuentes de noticias (RSS)  ← EDITAR
+## 8. Fuentes de noticias (RSS)
 
-> El cron lee la lista de feeds desde **`bin/news-feeds.txt`** (formato `nombre|url`).
-> Edita ese archivo, no esta sección. Prefiere RSS sobre scraping (legal, estable, sin paywall).
-> Mantén ambos sitios coherentes si anotas feeds aquí como referencia.
-
-```
-# nombre            url-del-feed   → ver y editar bin/news-feeds.txt
-# El País           https://feeds.elpais.com/...
-# Reuters World     https://...
-# Hacker News       https://hnrss.org/frontpage
-```
+> **Única fuente de verdad: `bin/news-feeds.txt`** (formato `nombre|url`). Edita ese archivo;
+> esta sección no mantiene copia. Prefiere RSS sobre scraping (legal, estable, sin paywall).
+> Antes de activar un feed, verifica que responde con `bash bin/check-feeds.sh`.
 
 ---
 
