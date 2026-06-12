@@ -44,7 +44,9 @@ Determina la fecha objetivo: el argumento si se pasó, si no la de hoy. Si no ex
    base: `_templates/noticia.md`.
 7. **Actualiza** `wiki/sources/news/_index.md` (añade la línea del día), `wiki/index.md`
    (sección Noticias), `wiki/log.md` (entrada nueva ARRIBA) y `wiki/hot.md`.
-8. **Limpia** `.raw/news/<fecha>/` **solo tras confirmar** que la nota diaria está escrita.
+8. **Limpia** `.raw/news/<fecha>/` **solo tras confirmar** que la nota diaria está escrita,
+   con `bash scripts/clean-raw-news.sh <fecha>` (es el único borrado permitido en headless;
+   ver `.claude/settings.json`).
 
 ### Regla de ruido
 Máximo **~10 entradas** por día. Si hay más, prioriza por relevancia para los temas de interés

@@ -1,8 +1,11 @@
 ---
 description: Procesa el lote de noticias del día. Lee los items crudos de .raw/news/<fecha>/, filtra por los temas de interés, deduplica, resume en español y escribe la nota diaria del radar en wiki/sources/news/<fecha>.md.
+argument-hint: "[YYYY-MM-DD]"
 ---
 
 Lee la skill `wiki-news`. Luego ejecuta el protocolo de ingesta diaria de noticias.
+
+Argumento recibido (fecha opcional, vacío = hoy): $ARGUMENTS
 
 Uso:
 - `/news` — procesa las noticias de **hoy** (`.raw/news/<hoy>/`).
@@ -16,6 +19,7 @@ Si no existe la carpeta `.raw/news/<fecha>/` o está vacía, di: "No hay items d
 <fecha>." y termina. No inventes noticias.
 
 Al terminar, actualiza `wiki/sources/news/_index.md`, `wiki/index.md`, `wiki/log.md` y
-`wiki/hot.md`, y limpia `.raw/news/<fecha>/` solo tras confirmar que la nota diaria quedó escrita.
+`wiki/hot.md`, y limpia `.raw/news/<fecha>/` con `bash scripts/clean-raw-news.sh <fecha>`
+solo tras confirmar que la nota diaria quedó escrita.
 
 Reporta: cuántos items crudos había, cuántos sobrevivieron al filtro y qué temas se trataron.
