@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore:
+      - "wiki/**"
+      - ".raw/**"
+      - ".vault-meta/**"
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sintaxis bash de todos los .sh
+        run: |
+          set -e
+          find . -name '*.sh' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n1 bash -n
+          echo "✓ bash -n OK"
+
+      - name: Compilación de todos los .py
+        run: |
+          set -e
+          find . -name '*.py' -not -path './node_modules/*' -not -path './tests/*' -print0 \
+            | xargs -0 python3 -m py_compile
+          echo "✓ py_compile OK"
+
+      - name: Tests del parser (pytest)
+        run: |
+          pip install pytest
+          pytest tests/ -v
+
+      - name: Smoke test del cron (servidor local, NO_CLAUDE=1)
+        run: bash tests/smoke-cron.sh

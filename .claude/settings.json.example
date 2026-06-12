@@ -1,0 +1,21 @@
+{
+  "_comentario": "Permisos mínimos para el cron headless del radar (CLAUDE.md §4, bug B7). Copia este archivo a .claude/settings.json:  cp .claude/settings.json.example .claude/settings.json",
+  "permissions": {
+    "allow": [
+      "Edit(wiki/**)",
+      "Write(wiki/**)",
+      "Edit(.vault-meta/**)",
+      "Write(.vault-meta/**)",
+      "Bash(bash scripts/wiki-lock.sh:*)",
+      "Bash(bash scripts/detect-transport.sh:*)",
+      "Bash(bash scripts/clean-raw-news.sh:*)",
+      "Bash(bash scripts/clean-inbox.sh:*)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)"
+    ]
+  }
+}
