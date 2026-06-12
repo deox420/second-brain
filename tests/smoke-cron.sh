@@ -9,8 +9,10 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 T="$(mktemp -d)"
-PORT=8799
-trap 'kill "$SERVER_PID" 2>/dev/null || true; rm -rf "$T"' EXIT
+# Puerto efímero variable para no chocar con un servidor previo del mismo test.
+PORT="$(( 8800 + (RANDOM % 800) ))"
+SERVER_PID=""
+trap 'kill "$SERVER_PID" 2>/dev/null || true; wait "$SERVER_PID" 2>/dev/null || true; rm -rf "$T"' EXIT
 
 mkdir -p "$T/vault/bin" "$T/vault/.vault-meta" "$T/www"
 cp "$REPO/bin/cron-news-ingest.sh" "$REPO/bin/parse-feed.py" "$T/vault/bin/"
@@ -27,9 +29,18 @@ cat > "$T/www/rss.xml" <<EOF
 EOF
 
 printf 'Humo|http://127.0.0.1:%s/rss.xml\n' "$PORT" > "$T/feeds.txt"
-(cd "$T/www" && python3 -m http.server "$PORT" >/dev/null 2>&1) &
+# python3 directo (no subshell) para que SERVER_PID sea el propio servidor y el
+# trap lo mate de verdad. --directory sirve el contenido sin cambiar de cwd.
+python3 -m http.server "$PORT" --bind 127.0.0.1 --directory "$T/www" >/dev/null 2>&1 &
 SERVER_PID=$!
-sleep 1
+
+# Espera activa a que el servidor responda (hasta ~10s) en vez de un sleep fijo.
+for _ in $(seq 1 50); do
+  if curl -fsS --max-time 1 "http://127.0.0.1:$PORT/rss.xml" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.2
+done
 
 cd "$T/vault"
 NO_CLAUDE=1 FEEDS_FILE="$T/feeds.txt" bash bin/cron-news-ingest.sh
