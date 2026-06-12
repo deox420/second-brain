@@ -26,4 +26,4 @@ Ver el protocolo completo en `CLAUDE.md` §4.
 
 ## Notas diarias
 
-<!-- Cada ingesta diaria añade aquí su línea: - [[YYYY-MM-DD]] — temas tratados. -->
+- [[2026-06-12]] — Ataques a agentes IA (Agentjacking, LangGraph, OpenClaw), malware en AUR, CRISPR para cáncer, datacenter protests

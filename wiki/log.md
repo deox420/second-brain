@@ -24,6 +24,15 @@ Leer entradas recientes: `grep "^## \[" wiki/log.md | head -10`
 
 ---
 
+## [2026-06-12] ingest | Procesamiento diario de noticias
+- Tipo: ingest (`/news`)
+- Items leídos: 217 (raw feeds RSS)
+- Items procesados: 8 (ciberseguridad 3, tecnologia 2, ciencia 1, infraestructura 1, multi-tema 1)
+- Filtro aplicado: temas de interés (ciberseguridad, ia, tecnologia, ciencia, actualidad-es)
+- Exclusiones aplicadas: deportes, farandula, sucesos
+- Nota generada: `wiki/sources/news/2026-06-12.md`
+- Hilos a vigilar: AI agents + supply chain (Sentry, LangChain), datacenter capacity squeeze
+
 ## [2026-06-01] setup | Creación del vault
 - Tipo: scaffolding
 - Base: `claude-obsidian` (patrón LLM Wiki de Karpathy), MIT — ver [[../ATTRIBUTION]].
