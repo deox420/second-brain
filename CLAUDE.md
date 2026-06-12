@@ -25,6 +25,8 @@ Este folder es a la vez un plugin de Claude Code y un vault de Obsidian. Las ski
 | `/autoresearch [tema]` | Investigación web autónoma: busca, sintetiza y archiva |
 | `/canvas` | Capa visual: añade imágenes, PDFs y notas a un canvas de Obsidian |
 | **`/news` / "Procesa las noticias de hoy"** | **Ingesta diaria de noticias (capa propia) → `wiki-news` (ver §4)** |
+| **`/news-semana [YYYY-WW]`** | **Radar semanal: sintetiza los radares diarios de la semana (capa propia)** |
+| **`/inbox`** | **Procesa la bandeja de captura móvil `.raw/inbox/` → ingesta normal (capa propia)** |
 | `/wiki-cli`, `/wiki-retrieve`, `/wiki-mode`, `/think`, `/wiki-fold` | Funciones avanzadas de la base (transporte CLI, retrieval híbrido, modos metodológicos, loop de pensamiento, folds). Opt-in. |
 
 **Transporte (base):** antes de mutar un archivo del vault, consulta `.vault-meta/transport.json`
