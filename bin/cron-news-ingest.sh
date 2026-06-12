@@ -108,4 +108,14 @@ if [ "$n_items" -eq 0 ]; then
 fi
 
 echo "Invocando Claude para procesar el radar del día (modelo: ${NEWS_MODEL:-haiku})..."
-claude -p "Procesa las noticias de hoy" --model "${NEWS_MODEL:-haiku}"
+# Permisos headless (B7): sin estos flags, una sesión -p no puede escribir y el
+# radar moriría en silencio. Write/Edit quedan confinados al vault porque es el
+# cwd de la sesión (escribir fuera del proyecto exige aprobación aparte, que en
+# headless se deniega). Las reglas Bash son prefijos exactos: lock, limpieza de
+# .raw/news/ y lectura.
+claude -p "Procesa las noticias de hoy" --model "${NEWS_MODEL:-haiku}" \
+  --allowedTools "Write" "Edit" \
+    "Bash(bash scripts/wiki-lock.sh *)" \
+    "Bash(rm -rf .raw/news/*)" "Bash(rm .raw/news/*)" \
+    "Bash(ls *)" "Bash(find .raw *)" "Bash(find wiki *)" \
+    "Bash(cat *)" "Bash(grep *)" "Bash(wc *)"
