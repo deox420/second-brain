@@ -1,0 +1,26 @@
+# Normaliza los saltos de línea: en el repo SIEMPRE LF, sea cual sea el SO.
+# Evita el churn y la corrupción al sincronizar entre Windows, Arch Linux y Android.
+* text=auto eol=lf
+
+# Scripts y código: LF obligatorio (CRLF rompe el shebang y bash en Linux/macOS).
+*.sh        text eol=lf
+*.py        text eol=lf
+*.ts        text eol=lf
+*.js        text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.canvas    text eol=lf
+
+# Binarios: no tocar (sin normalización de saltos de línea ni diffs de texto).
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+# JS minificado de los plugins de Obsidian (se versiona tal cual viene del upstream).
+.obsidian/plugins/**/main.js binary

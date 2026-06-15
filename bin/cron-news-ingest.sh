@@ -134,3 +134,9 @@ fi
 
 echo "Invocando Claude para procesar el radar del día (modelo: $NEWS_MODEL)..."
 claude -p "Procesa las noticias de hoy" --model "$NEWS_MODEL" --permission-mode acceptEdits
+
+# Propaga el radar al resto de dispositivos (Windows, Android) y dispara el rebuild web.
+# Desactivable con NO_SYNC=1. Si no hay red/credenciales, los commits quedan locales.
+if [ "${NO_SYNC:-0}" != "1" ] && [ -x "$SCRIPT_DIR/sync.sh" ]; then
+  bash "$SCRIPT_DIR/sync.sh" || echo "Aviso: sync falló; los commits del radar quedan locales." >&2
+fi
