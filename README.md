@@ -79,6 +79,20 @@ Activación (una vez): Settings → Pages → Source: "GitHub Actions". Privacid
 `publish: false` y todo `wiki/sessions/` **no** se publican. Guía completa (incl. migración
 a Cloudflare Pages cuando el repo pase a privado): [docs/publicacion.md](docs/publicacion.md).
 
+## Sincronización entre dispositivos
+
+GitHub es la **única fuente de verdad**; los tres dispositivos cuelgan de él por git (gratis):
+
+- **Arch (portátil) = host cerebro:** corre Claude Code y el cron. Al procesar el radar llama a
+  `bin/sync.sh` (commit + `pull --rebase` + push), así el resultado llega al resto y dispara la web.
+- **Windows:** Obsidian + plugin *obsidian-git* (o `bash bin/sync.sh` en WSL/Git Bash).
+- **Android:** Obsidian móvil + *obsidian-git* (HTTPS + token).
+
+`.gitattributes` fuerza saltos de línea LF para que Windows no rompa los scripts. Regla de oro:
+**un dispositivo escribe a la vez**; deja que sincronice antes de cambiar de aparato. Sincroniza
+a mano en cualquier ordenador con `bash bin/sync.sh`. Guía completa (autenticación SSH/token,
+ajustes del plugin, conflictos): [docs/sincronizacion.md](docs/sincronizacion.md).
+
 ## Captura desde el móvil
 
 Convención: todo lo que aterrice en `.raw/inbox/` es material pendiente. Captúralo con
