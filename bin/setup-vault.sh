@@ -122,8 +122,15 @@ echo ""
 echo "Antes de la primera ingesta de noticias:"
 echo "  - Edita los TEMAS DE INTERÉS en CLAUDE.md §7."
 echo "  - Activa tus fuentes RSS en bin/news-feeds.txt (verifícalas con bin/check-feeds.sh)."
-echo "  - Para el cron diario, mira el ejemplo de crontab en bin/cron-news-ingest.sh."
+echo "  - Para el cron diario: bash bin/install-cron.sh (instala radar diario + semanal y lint)."
 echo ""
+case "$(uname -r 2>/dev/null)" in
+  *microsoft*|*WSL*)
+    echo "Windows/WSL2 detectado: guía completa en docs/instalacion-windows.md"
+    echo "  (incluye cómo activar cron en WSL y abrir el vault en Obsidian)."
+    echo ""
+    ;;
+esac
 echo "En Claude Code, dentro de esta carpeta:"
 echo "  /wiki         — scaffold y enrutado del wiki"
 echo "  /news         — procesa el radar de noticias del día"
