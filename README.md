@@ -34,6 +34,7 @@ con una **capa propia de ingesta diaria de noticias**, **publicación web** y **
 ## Requisitos
 
 - **bash ≥ 3.2** (los scripts son compatibles con el bash de macOS), `curl`, `python3` (solo stdlib).
+- En **Windows** todo corre sobre **WSL2 (Ubuntu)**: guía paso a paso en [`docs/instalacion-windows.md`](docs/instalacion-windows.md).
 - **Claude Code CLI** (`claude` en el PATH) para el procesado del radar y la bandeja.
 - Permisos headless: copia la allowlist mínima y revísala —
   `cp .claude/settings.json.example .claude/settings.json`
@@ -63,13 +64,20 @@ con una **capa propia de ingesta diaria de noticias**, **publicación web** y **
    - `/inbox` — procesa las capturas del móvil.
    - `/autoresearch [tema]` — investiga y archiva. `/save` — archiva la sesión.
 
-4. **Automatiza** (crontab; el radar usa un modelo barato por defecto, `NEWS_MODEL=haiku`):
+4. **Automatiza** (el radar usa un modelo barato por defecto, `NEWS_MODEL=haiku`).
+   La forma sencilla, idempotente, en Linux/macOS/WSL2:
+   ```bash
+   bash bin/install-cron.sh        # instala radar diario + lint y radar semanales
+   bash bin/install-cron.sh --show # vista previa  ·  --remove para quitarlo
+   ```
+   Equivale a este crontab (puedes ponerlo a mano si prefieres):
    ```cron
    30 7 * * *  cd /ruta/al/vault && bash bin/cron-news-ingest.sh >> .vault-meta/news-cron.log 2>&1
    0  8 * * 0  cd /ruta/al/vault && claude -p "Ejecuta el lint semanal del vault" --permission-mode acceptEdits >> .vault-meta/lint-cron.log 2>&1
    30 8 * * 0  cd /ruta/al/vault && claude -p "Genera el radar semanal de noticias (comando /news-semana)" --model haiku --permission-mode acceptEdits >> .vault-meta/news-cron.log 2>&1
    ```
    Para recolectar sin invocar a Claude: `NO_CLAUDE=1 bash bin/cron-news-ingest.sh`.
+   En **Windows/WSL2** el demonio cron no arranca solo — ver [`docs/instalacion-windows.md`](docs/instalacion-windows.md) §7.
 
 ## Sitio web
 
